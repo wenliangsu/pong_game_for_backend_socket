@@ -1,7 +1,10 @@
 // Canvas Related 
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
+// 頁面要連線的server端同一個ip，port，跟index.html一應跟一應位置
 const socket = io('http://localhost:3000');
+
+let isReferee = false;
 let paddleIndex = 0;
 
 let width = 500;
@@ -59,10 +62,10 @@ function renderCanvas() {
   // Paddle Color
   context.fillStyle = 'white';
 
-  // Bottom Paddle
+  //! Bottom Paddle
   context.fillRect(paddleX[0], height - 20, paddleWidth, paddleHeight);
 
-  // Top Paddle
+  //! Top Paddle
   context.fillRect(paddleX[1], 10, paddleWidth, paddleHeight);
 
   // Dashed Center Line
@@ -165,13 +168,16 @@ function animate() {
   window.requestAnimationFrame(animate);
 }
 
-// Start Game, Reset Everything
-function startGame() {
+// load Game, Reset Everything
+function loadGame() {
   createCanvas();
   renderIntro();
   socket.emit('ready', {});
+}
 
-  paddleIndex = 0;
+function startGame() {
+  // 設定player使用bottom或top的paddle
+  paddleIndex = isReferee ? 0 : 1;
   window.requestAnimationFrame(animate);
   // note 監控使用者的滑鼠移動
   canvas.addEventListener('mousemove', (e) => {
@@ -189,8 +195,18 @@ function startGame() {
 }
 
 // On Load
-startGame();
+loadGame();
 
 socket.on('connect', () => {
   console.log('Connected as ....', socket.id);
+});
+
+// 設置後面進來的player為啟動遊戲開始的裁判員
+// notice socket.on 跟io.emit裡面的字串要相同，因爲這是兩個在互相接收跟傳遞，不同的話會無法連線
+socket.on('startGame', (refereeId) => {
+  console.log('Referee is', refereeId);
+
+  isReferee = socket.id === refereeId;
+
+  startGame();
 });
