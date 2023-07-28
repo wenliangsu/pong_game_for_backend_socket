@@ -62,6 +62,7 @@ function renderCanvas() {
   // Paddle Color
   context.fillStyle = 'white';
 
+  // note 底部跟頂部的paddle設定，根據canvas的grid y軸以頂部為起點往下為正(跟學的座標軸有點不太一樣)
   //! Bottom Paddle
   context.fillRect(paddleX[0], height - 20, paddleWidth, paddleHeight);
 
@@ -189,6 +190,10 @@ function startGame() {
     if (paddleX[paddleIndex] > (width - paddleWidth)) {
       paddleX[paddleIndex] = width - paddleWidth;
     }
+
+    socket.emit('paddleMove', {
+      xPosition: paddleX[paddleIndex]
+    });
     // Hide Cursor
     canvas.style.cursor = 'none';
   });
@@ -209,4 +214,11 @@ socket.on('startGame', (refereeId) => {
   isReferee = socket.id === refereeId;
 
   startGame();
+});
+
+socket.on('paddleMove', (paddleData) => {
+  // Thinking 這端要接收server端資料，所以判別是自己還是對方的時候， 1 -> 0 or 0 -> 1
+  // Toggle 1 into 0, and 0 into 1
+  const opponentPaddleIndex = 1 - paddleIndex;
+  paddleX[opponentPaddleIndex] = paddleData.xPosition;
 });
