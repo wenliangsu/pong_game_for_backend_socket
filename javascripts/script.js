@@ -233,6 +233,7 @@ socket.on('startGame', (refereeId) => {
   startGame();
 });
 
+// Paddle synchronization 
 socket.on('paddleMove', (paddleData) => {
   // Thinking 這端要接收server端資料，所以判別是自己還是對方的時候， 1 -> 0 or 0 -> 1
   // Toggle 1 into 0, and 0 into 1
@@ -240,6 +241,7 @@ socket.on('paddleMove', (paddleData) => {
   paddleX[opponentPaddleIndex] = paddleData.xPosition;
 });
 
+// Ball synchronization
 socket.on('ballMove', (ballData) => {
   ({ ballX, ballY, score } = ballData);
 });

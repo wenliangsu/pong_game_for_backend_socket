@@ -24,19 +24,25 @@ io.on('connection', (socket) => {
     readyPlayerCount++;
 
     // note 湊到兩個的話就開始發送startGame的訊號給script.js
-    if (readyPlayerCount === 2) {
+    if (readyPlayerCount % 2 === 0) {
       // broadcast('startGame')
       io.emit('startGame', socket.id);
     }
   });
 
+  // Paddle synchronization 
   socket.on('paddleMove', (paddleData) => {
     // note socket.broadcast.emit()是送出訊息給全部的client，除了發送者之外
     socket.broadcast.emit('paddleMove', paddleData);
   });
 
+  // Ball synchronization
   socket.on('ballMove', (ballData) => {
     socket.broadcast.emit('ballMove', ballData);
-
   });
+
+  socket.on('disconnect', (reason) => {
+    console.log(`Client ${socket.id} disconnected: ${reason}`);
+  });
+
 });
