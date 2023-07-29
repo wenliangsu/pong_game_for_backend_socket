@@ -1,8 +1,8 @@
 // Canvas Related 
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
-// port 已經跟express整合
-const socket = io();
+// 可以自行設定channel名稱，但是不會影響ＵＲＬ的網址
+const socket = io('/pong');
 
 let isReferee = false;
 let paddleIndex = 0;

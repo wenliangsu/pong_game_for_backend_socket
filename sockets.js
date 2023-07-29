@@ -1,7 +1,9 @@
 let readyPlayerCount = 0;
 
 function listen(io) {
-  io.on('connection', (socket) => {
+  // note 命名後可以擁有相同的instance可以使用
+  const pongNamespace = io.of('/pong');
+  pongNamespace.on('connection', (socket) => {
     // note 所有players連線會顯示
     console.log('a user connected', socket.id);
 
@@ -14,7 +16,7 @@ function listen(io) {
       // note 湊到兩個的話就開始發送startGame的訊號給script.js
       if (readyPlayerCount % 2 === 0) {
         // broadcast('startGame')
-        io.emit('startGame', socket.id);
+        pongNamespace.emit('startGame', socket.id);
       }
     });
 
