@@ -1,8 +1,8 @@
 // Canvas Related 
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
-// 頁面要連線的server端同一個ip，port，跟index.html一應跟一應位置
-const socket = io('http://localhost:3000');
+// port 已經跟express整合
+const socket = io();
 
 let isReferee = false;
 let paddleIndex = 0;
