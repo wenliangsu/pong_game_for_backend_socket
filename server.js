@@ -31,6 +31,12 @@ io.on('connection', (socket) => {
   });
 
   socket.on('paddleMove', (paddleData) => {
+    // note socket.broadcast.emit()是送出訊息給全部的client，除了發送者之外
     socket.broadcast.emit('paddleMove', paddleData);
+  });
+
+  socket.on('ballMove', (ballData) => {
+    socket.broadcast.emit('ballMove', ballData);
+
   });
 });

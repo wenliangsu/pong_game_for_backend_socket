@@ -90,10 +90,17 @@ function renderCanvas() {
 }
 
 // Reset Ball to Center
+// notice 得分後球要回到中央，也要發送資料出去
 function ballReset() {
   ballX = width / 2;
   ballY = height / 2;
   speedY = 3;
+
+  socket.emit('ballMove', {
+    ballX,
+    ballY,
+    score
+  });
 }
 
 // Adjust Ball Movement
@@ -104,6 +111,12 @@ function ballMove() {
   if (playerMoved) {
     ballX += speedX;
   }
+
+  socket.emit('ballMove', {
+    ballX,
+    ballY,
+    score
+  });
 }
 
 // Determine What Ball Bounces Off, Score Points, Reset Ball
@@ -162,10 +175,14 @@ function ballBoundaries() {
 
 
 // Called Every Frame
+// note this is a game loop
 function animate() {
-  ballMove();
+  // Thinking 球的移動跟彈跳得分都是由裁判端決定，因此為了避免邏輯混亂，統一由裁判段發送數據
+  if (isReferee) {
+    ballMove();
+    ballBoundaries();
+  }
   renderCanvas();
-  ballBoundaries();
   window.requestAnimationFrame(animate);
 }
 
@@ -221,4 +238,8 @@ socket.on('paddleMove', (paddleData) => {
   // Toggle 1 into 0, and 0 into 1
   const opponentPaddleIndex = 1 - paddleIndex;
   paddleX[opponentPaddleIndex] = paddleData.xPosition;
+});
+
+socket.on('ballMove', (ballData) => {
+  ({ ballX, ballY, score } = ballData);
 });
